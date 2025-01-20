@@ -1,0 +1,62 @@
+
+= Testing the getting-started example on Docker with Arquillian Cube!
+
+- The `getting-started` project is a simple Jakarta EE application with a HTTP endpoint that is running in
+https://wildfly.org[WildFly].
+- https://github.com/arquillian/arquillian-cube[Arquillian Cube] is an Arquillian extension that can be used to test
+containerized applications, either onn Docker, Kubernetes or OpenShift
+
+This is a variant of the https://www.wildfly.org/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[WildFly Java Microservice - PART 1: Docker Image]
+blog article and the goal is to demonstrate how it can be easily tested on actual Docker container thanks to
+https://github.com/arquillian/arquillian-cube[Arquillian Cube]
+
+
+The `src/main` folder contains a simple 'Hello world' style Jakarta EE application using JAX-RS.
+
+*Docker build directory*: the project contains a `docker-compose.yml` file and a `docker-build` directory that contains
+a Dockerfile. The `docker-compose` defines a `wildfly` docker container and its configuration, like exposed ports, and
+references the `Dockerfile` in the `docker-build` directory.
+Such file is the one used to build a runtime image, starting from a official `wildfly-runtime` image on Quay.io.
+
+The POM is configured to use Arquilliann Cube to test theee WildFly application, but on Docker!
+
+== Building the application
+
+To run the application, you use Maven:
+
+[source,shell]
+----
+mvn clean package -DskipTests
+----
+
+Maven will compile the application and provision a WildFly server in `docker-build/server`, including the application
+deployed.
+
+== Running the application
+
+To run the application, run the commands:
+
+[source,shell]
+----
+cd docker-build/server
+./bin/standalone.sh
+----
+
+Once WildFly is running, the application can be accessed at http://localhost:8080/
+
+== Testing the application
+
+To run integration tests to verify the application, you can use Maven:
+
+[source,shell]
+----
+mvn clean package verify
+----
+
+Tests in `src/test` are run against a Docker container which is running the WIldFly application image.
+
+== Resources
+
+* https://github.com/arquillian/arquillian-cube
+* https://wildfly.org[WildFly]
+* https://docs.wildfly.org[WildFly Documentation]

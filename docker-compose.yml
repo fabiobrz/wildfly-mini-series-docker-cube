@@ -1,0 +1,12 @@
+version: '2'
+services:
+  wildfly:
+    build:
+      context: docker-build
+    ports:
+      - "9991:9990"
+      - "8081:8080"
+    networks:
+      - front-tier
+networks:
+  front-tier:
