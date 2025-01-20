@@ -172,13 +172,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- We need Arquillian Cube to run our WildFly instance in a Docker container -->
-        <dependency>
-            <groupId>org.arquillian.cube</groupId>
-            <artifactId>arquillian-cube-docker</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Import the CDI API, we use provided scope as the API is included in WildFly -->
         <dependency>
             <groupId>jakarta.enterprise</groupId>
@@ -201,17 +194,6 @@
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Not needed anymore because the test uses a standalone Docker container -->
         <!--        <dependency>-->
         <!--            <groupId>org.wildfly.arquillian</groupId>-->
@@ -219,9 +201,38 @@
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
 
+        <!-- We need Arquillian Cube to run our WildFly instance in a Docker container -->
+        <dependency>
+            <groupId>org.arquillian.cube</groupId>
+            <artifactId>arquillian-cube-docker</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-standalone</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Slf4j is used by Arquillian Cube Docker -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -240,21 +251,6 @@
             <artifactId>commons-logging-jboss-logging</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- Used by Arquillian Cube Docker -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-
 
     </dependencies>
 
@@ -285,6 +281,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.3.2</version>
+                <!-- Let's remove ./docker-build/server, too -->
                 <configuration>
                     <filesets>
                         <fileset>
@@ -299,6 +296,7 @@
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>${version.wildfly.maven.plugin}</version>
                 <configuration>
+                    <!-- We need for the server to be provisioned in ./docker-build/server, as required by the Dockerfile -->
                     <provisioningDir>${project.basedir}/docker-build/server</provisioningDir>
                     <overwriteProvisionedServer>true</overwriteProvisionedServer>
                     <feature-packs>
